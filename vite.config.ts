@@ -6,5 +6,12 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@import "@/styles/variables.scss";'
+      }
+    }
   }
 })
