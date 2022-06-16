@@ -1,5 +1,5 @@
 import Axios from './axios'
 const http = new Axios({
-  baseURL: 'https://shop.fed.lagounews.com/api/admin'
+  baseURL: import.meta.env.VITE_API_BASEURL
 })
 export default http

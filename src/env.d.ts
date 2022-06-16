@@ -6,3 +6,13 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+interface ViteEnv {
+  VITE_API_BASEURL: string
+}
+interface ImportMetaEnv extends ViteEnv {}
+
+// eslint-disable-next-line no-unused-vars
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
