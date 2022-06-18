@@ -13,5 +13,13 @@ export default defineConfig({
         additionalData: '@import "@/styles/variables.scss";'
       }
     }
+  },
+  server: {
+    proxy: {
+      '/api/admin': {
+        target: 'https://shop.fed.lagounews.com',
+        changeOrigin: true
+      }
+    }
   }
 })
