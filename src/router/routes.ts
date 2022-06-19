@@ -1,10 +1,18 @@
-import { RouteRecordRaw } from 'vue-router'
-
+import { RouteRecordRaw, RouterView } from 'vue-router'
+import AppLayout from '@/layouts/AppLayout.vue'
+import productRoutes from './modules/product'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'home',
-    component: () => import('@/views/home/index.vue')
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'home',
+        component: () => import('@/views/home/index.vue')
+      },
+      productRoutes
+    ]
   },
   {
     path: '/login',
