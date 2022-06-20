@@ -24,11 +24,15 @@ import AppHeader from './components/AppHeader.vue'
 <style lang="scss" scoped>
 .el-container {
   height: 100vh;
+  background-color:#f5f7f9;
 }
 .el-aside {
   background-color: #041528;
   color: #333;
   width: auto;
+}
+.el-header {
+  background-color:#fff;
 }
 
 </style>

@@ -5,8 +5,11 @@ import { useRouter } from 'vue-router'
 import {
   Menu,
   ArrowRight,
-  FullScreen
+  FullScreen,
+  Notification
 } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { logout } from '@/apis/common'
 const store = useStore()
 const router = useRouter()
 // 菜单栏收缩
@@ -26,6 +29,36 @@ const toggleFullScreen = () => {
       document.exitFullscreen()
     }
   }
+}
+// 登出
+const handleLogou = () => {
+  // 退出提示
+  ElMessageBox.confirm('确认退出吗？', '退出提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    // 确认发出退出请求
+    await logout()
+
+    // 清除用户登录信息
+    store.commit('setUser', null)
+
+    ElMessage({
+      type: 'success',
+      message: '退出成功!'
+    })
+
+    // 跳转到登录页
+    router.push({
+      name: 'login'
+    })
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '已取消退出'
+    })
+  })
 }
 </script>
 
@@ -51,12 +84,36 @@ const toggleFullScreen = () => {
       </el-space>
     </div>
     <div class="right">
-      <el-icon
-        :size="28"
-        @click="toggleFullScreen"
-      >
-        <FullScreen />
-      </el-icon>
+      <el-space :size="30">
+        <el-tooltip
+          content="全屏"
+          placement="bottom"
+        >
+          <el-icon
+            :size="28"
+            @click="toggleFullScreen"
+          >
+            <FullScreen />
+          </el-icon>
+        </el-tooltip>
+        <el-icon :size="28">
+          <Notification />
+        </el-icon>
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            {{ $store.state.user?.account }}
+            <i class="el-icon-arrow-down el-icon--right" />
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>个人中心</el-dropdown-item>
+              <el-dropdown-item @click="handleLogou">
+                退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </el-space>
     </div>
   </div>
 </template>
@@ -68,7 +125,7 @@ const toggleFullScreen = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    .left {
+    .left,.right {
       display: flex;
       align-items: center;
     }

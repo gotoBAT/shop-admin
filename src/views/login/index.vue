@@ -1,13 +1,16 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-
+import { getCaptcha, login } from '@/apis/common'
+import { onMounted, reactive, ref } from 'vue'
+import { useStore } from '@/store'
+import { useRoute, useRouter } from 'vue-router'
+import type { IElForm, IFormRule } from '@/types/element-plus'
 const user = reactive({
   account: 'admin',
   pwd: '123456',
   imgcode: ''
 })
 const loading = ref(false)
-const rules = ref({
+const rules = ref<IFormRule>({
   account: [
     { required: true, message: '请输入账号', trigger: 'change' }
   ],
@@ -18,9 +21,39 @@ const rules = ref({
     { required: true, message: '请输入验证码', trigger: 'change' }
   ]
 })
-
+// 刷新验证码
+const captchaSrc = ref('')
+const loadCaptcha = async () => {
+  const data = await getCaptcha()
+  captchaSrc.value = URL.createObjectURL(data as Blob)
+}
+onMounted(() => {
+  loadCaptcha()
+})
+const form = ref<IElForm | null>(null)
+// 登录
+const store = useStore()
+const router = useRouter()
+const route = useRoute()
 const handleSubmit = async () => {
-  console.log('handleSubmit')
+  const valid = await form.value?.validate()
+  if (!valid) {
+    return false
+  }
+  loading.value = true
+  const { data } = await login(user).finally(() => {
+    loading.value = false
+  })
+  store.commit('setUser', {
+    ...data?.user_info,
+    token: data?.token
+  })
+  // 跳转回原来页面
+  let redirect = route.query.redirect || '/'
+  if (typeof redirect !== 'string') {
+    redirect = '/'
+  }
+  router.replace(redirect)
 }
 
 </script>
@@ -76,7 +109,8 @@ const handleSubmit = async () => {
           <img
             class="imgcode"
             alt="验证码"
-            src="https://shop.fed.lagounews.com/api/admin/captcha_pro"
+            :src="captchaSrc"
+            @Click="loadCaptcha"
           >
         </div>
       </el-form-item>
